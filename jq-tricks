@@ -1,0 +1,18 @@
+# jq throwaways
+
+## AWS CloudTrail log parsing
+```
+for i in *.gz; do 
+	zcat "$i" \
+		| jq '
+			.Records[] 
+			| select(.userAgent == "codebuild.amazonaws.com") 
+			| select(.eventType == "AwsApiCall") \
+			| select(.eventSource == "ec2.amazonaws.com") 
+			| .eventName
+		'
+done \
+	| sort \
+	| uniq
+```
+
